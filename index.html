@@ -1,0 +1,2939 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오늘 뭐 입지? 기상 데이터로 밝히는 최적 착장 기준점 - 중간과제 슬라이드덱</title>
+  
+  <!-- Pretendard Variable Webfont CDN -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  
+  <!-- Font Awesome Icons 6.5.1 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Reveal.js 5.1.0 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" />
+
+  <!-- Anime.js 3.2.1 CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN.md Token System (Pinterest Warm-Cream & Precision Typography)
+       ========================================================================== */
+    :root {
+      /* Brand Accent */
+      --colors-primary: #e60023;
+      --colors-primary-pressed: #cc001f;
+      --colors-on-primary: #ffffff;
+      
+      /* Surface & Canvas (Warm Cream Palette) */
+      --colors-canvas: #ffffff;
+      --colors-surface-soft: #fbfbf9;
+      --colors-surface-card: #f6f6f3;
+      --colors-surface-elevated: #ffffff;
+      --colors-secondary-bg: #e5e5e0;
+      --colors-secondary-pressed: #c8c8c1;
+      --colors-surface-dark: #262622;
+      --colors-on-dark: #ffffff;
+      --colors-on-dark-mute: rgba(255, 255, 255, 0.72);
+      
+      /* Dividers & Borders */
+      --colors-hairline: #dadad3;
+      --colors-hairline-soft: #e5e5e0;
+      
+      /* Typography Palette */
+      --colors-ink: #000000;
+      --colors-ink-soft: #211922;
+      --colors-body: #33332e;
+      --colors-charcoal: #262622;
+      --colors-mute: #62625b;
+      --colors-ash: #91918c;
+      --colors-stone: #c8c8c1;
+      
+      /* Semantic & Editorial Accents */
+      --colors-focus-outer: #435ee5;
+      --colors-accent-blue: #617bff;
+      --colors-accent-purple: #7e238b;
+      --colors-accent-purple-deep: #6845ab;
+      --colors-success-deep: #103c25;
+      --colors-success-pale: #c7f0da;
+      --colors-error: #9e0a0a;
+      --colors-error-pale: #fee2e2;
+      --colors-warning-pale: #fef3c7;
+      --colors-warning-deep: #92400e;
+
+      /* macOS Window Traffic Lights */
+      --mac-close: #ff5f56;
+      --mac-minimize: #ffbd2e;
+      --mac-maximize: #27c93f;
+
+      /* Shapes & Border Radius */
+      --rounded-none: 0px;
+      --rounded-sm: 8px;
+      --rounded-md: 16px;
+      --rounded-lg: 32px;
+      --rounded-full: 9999px;
+
+      /* Motion Transitions */
+      --transition-fast: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background-color: #141412;
+      color: var(--colors-body);
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* ==========================================================================
+       Fixed Top Chrome Navigation Bar (8개 슬라이드 탭)
+       ========================================================================== */
+    #deck-chrome-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background-color: var(--colors-canvas);
+      border-bottom: 1px solid var(--colors-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark-circle {
+      width: 28px;
+      height: 28px;
+      background-color: var(--colors-primary);
+      border-radius: var(--rounded-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .deck-header-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--colors-ink);
+      letter-spacing: -0.3px;
+    }
+
+    .deck-header-tag {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--colors-mute);
+      background-color: var(--colors-surface-card);
+      padding: 4px 8px;
+      border-radius: var(--rounded-full);
+    }
+
+    .nav-tabs-group {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .nav-tab-btn {
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--colors-mute);
+      background-color: transparent;
+      border: none;
+      border-radius: var(--rounded-full);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-tab-btn:hover {
+      background-color: var(--colors-surface-card);
+      color: var(--colors-ink);
+    }
+
+    .nav-tab-btn.active {
+      background-color: var(--colors-ink);
+      color: var(--colors-on-dark);
+    }
+
+    .nav-tab-btn.active .tab-badge-num {
+      background-color: var(--colors-primary);
+      color: #fff;
+    }
+
+    .tab-badge-num {
+      width: 15px;
+      height: 15px;
+      line-height: 15px;
+      text-align: center;
+      border-radius: var(--rounded-full);
+      font-size: 9.5px;
+      font-weight: 800;
+      background-color: var(--colors-secondary-bg);
+      color: var(--colors-ink);
+    }
+
+    /* ==========================================================================
+       Fixed Bottom Chrome Navigation Controls
+       ========================================================================== */
+    #deck-chrome-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background-color: var(--colors-canvas);
+      border-top: 1px solid var(--colors-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 1000;
+    }
+
+    .footer-left-info {
+      font-size: 12px;
+      color: var(--colors-mute);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .kbd-hint-group {
+      font-size: 11px;
+      color: var(--colors-ash);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    kbd {
+      background-color: var(--colors-surface-card);
+      border: 1px solid var(--colors-hairline);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
+      color: var(--colors-charcoal);
+      font-family: inherit;
+    }
+
+    .footer-right-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slide-count-badge {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--colors-ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chrome-ctrl-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--rounded-full);
+      background-color: var(--colors-surface-card);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--colors-ink);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color var(--transition-fast);
+    }
+
+    .chrome-ctrl-btn:hover {
+      background-color: var(--colors-secondary-bg);
+    }
+
+    /* ==========================================================================
+       Reveal.js 16:9 Presentation Stage
+       ========================================================================== */
+    .reveal {
+      width: 100vw !important;
+      height: 100vh !important;
+      background-color: #1a1a17;
+    }
+
+    .reveal .slides {
+      text-align: left;
+    }
+
+    .reveal .slides section {
+      padding: 0 !important;
+      width: 1280px !important;
+      height: 720px !important;
+      background-color: var(--colors-surface-soft);
+      border-radius: var(--rounded-md);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+      display: flex !important;
+      flex-direction: column;
+      position: absolute;
+      top: 0 !important;
+      left: 0 !important;
+    }
+
+    .slide-viewport-inner {
+      width: 100%;
+      height: 100%;
+      padding: 42px 40px 30px;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--colors-surface-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reveal .progress {
+      height: 4px;
+      color: var(--colors-primary);
+      z-index: 1001;
+      top: 52px;
+    }
+
+    .reveal .progress span {
+      background: var(--colors-primary);
+    }
+
+    .reveal .controls {
+      display: none !important;
+    }
+
+    /* Common Slide Typography */
+    .slide-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--colors-primary);
+      margin-bottom: 3px;
+    }
+
+    .slide-eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      background-color: var(--colors-primary);
+      border-radius: var(--rounded-full);
+    }
+
+    .slide-main-title {
+      font-size: 25px;
+      font-weight: 800;
+      color: var(--colors-ink);
+      letter-spacing: -1px;
+      line-height: 1.2;
+    }
+
+    .slide-sub-desc {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--colors-mute);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    /* ==========================================================================
+       SLIDE 1: COVER (표지 - 단위 '5벌' 반영)
+       ========================================================================== */
+    .cover-split-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
+      height: 100%;
+      align-items: center;
+    }
+
+    .cover-left-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .cover-pills-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .pill-chip {
+      background-color: var(--colors-canvas);
+      color: var(--colors-ink);
+      border: 1px solid var(--colors-hairline);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: var(--rounded-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-chip.red {
+      background-color: #fde8ea;
+      color: var(--colors-primary);
+      border-color: #f8b4bc;
+    }
+
+    .cover-hero-heading {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -1.3px;
+      color: var(--colors-ink);
+      margin-bottom: 16px;
+    }
+
+    .cover-hero-heading .red-point {
+      color: var(--colors-primary);
+    }
+
+    .cover-body-narrative {
+      font-size: 15.5px;
+      line-height: 1.5;
+      color: var(--colors-body);
+      margin-bottom: 26px;
+    }
+
+    .author-badge-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      padding: 16px 20px;
+      border: 1px solid var(--colors-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .author-avatar-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .author-circle-pic {
+      width: 44px;
+      height: 44px;
+      background-color: var(--colors-surface-card);
+      border-radius: var(--rounded-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--colors-ink);
+      border: 1px solid var(--colors-hairline);
+    }
+
+    .author-name-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--colors-ink);
+    }
+
+    .author-sub-text {
+      font-size: 12px;
+      color: var(--colors-mute);
+      margin-top: 2px;
+    }
+
+    .submit-meta-box {
+      text-align: right;
+    }
+
+    .submit-course-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--colors-primary);
+    }
+
+    .submit-note {
+      font-size: 11px;
+      color: var(--colors-ash);
+      margin-top: 2px;
+    }
+
+    .cover-visual-tiles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 14px;
+    }
+
+    .tile-pin-box {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      padding: 20px;
+      border: 1px solid var(--colors-hairline);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 160px;
+    }
+
+    .tile-pin-box.full-banner {
+      grid-column: span 2;
+      height: 120px;
+      background: linear-gradient(135deg, #262622 0%, #171715 100%);
+      color: #fff;
+      border: none;
+    }
+
+    .tile-icon-bubble {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--rounded-full);
+      background-color: var(--colors-surface-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      color: var(--colors-ink);
+    }
+
+    .tile-pin-box.full-banner .tile-icon-bubble {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .tile-metric-digit {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--colors-ink);
+      letter-spacing: -0.8px;
+    }
+
+    .tile-metric-caption {
+      font-size: 12px;
+      color: var(--colors-mute);
+      font-weight: 500;
+    }
+
+    /* ==========================================================================
+       SLIDE 2: PROBLEM DEFINITION (문제 정의 및 질문 고정)
+       ========================================================================== */
+    .problem-split-view {
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      gap: 22px;
+      height: calc(100% - 60px);
+    }
+
+    .infographic-showcase-pin {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+    }
+
+    .infographic-full-stage {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      background-color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px 2px 14px;
+      overflow: hidden;
+    }
+
+    .infographic-full-stage img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      border-radius: var(--rounded-sm);
+    }
+
+    .pin-overlay-pill {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background-color: var(--colors-canvas);
+      color: var(--colors-ink);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: var(--rounded-full);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .pin-overlay-pill .alert-dot {
+      width: 7px;
+      height: 7px;
+      background-color: var(--colors-primary);
+      border-radius: var(--rounded-full);
+    }
+
+    .infographic-caption-foot {
+      padding: 10px 16px;
+      background-color: var(--colors-surface-card);
+      border-top: 1px solid var(--colors-hairline-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .problem-cards-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .problem-question-banner {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      padding: 12px 18px;
+      border: 1px solid var(--colors-hairline);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .question-lead-badge {
+      background-color: var(--colors-primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--rounded-full);
+      white-space: nowrap;
+    }
+
+    .problem-grid-dual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .problem-box-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      padding: 16px 18px;
+      border: 1px solid var(--colors-hairline);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .contrast-banner-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      padding: 14px 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .contrast-columns-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 8px 0;
+    }
+
+    .contrast-cell {
+      border-radius: var(--rounded-sm);
+      padding: 10px 12px;
+      border: 1px solid var(--colors-hairline-soft);
+    }
+
+    .contrast-cell.legacy {
+      background-color: var(--colors-surface-card);
+    }
+
+    .contrast-cell.proposed {
+      background-color: #fff7f7;
+      border-color: #fecaca;
+    }
+
+    /* ==========================================================================
+       SLIDE 3: ACADEMIC LITERATURE (학술적 배경 - 행간/여백/상하균형 전면 확대)
+       ========================================================================== */
+    .academic-rich-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      height: calc(100% - 66px);
+    }
+
+    .academic-rich-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      padding: 20px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    }
+
+    .academic-card-top {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .academic-tag-badge {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: var(--rounded-full);
+      background-color: #fee2e2;
+      color: var(--colors-primary);
+      width: fit-content;
+      margin-bottom: 0.9rem;
+    }
+
+    .academic-tag-badge.blue {
+      background-color: #e0e7ff;
+      color: var(--colors-focus-outer);
+    }
+
+    .academic-tag-badge.purple {
+      background-color: #f3e8ff;
+      color: var(--colors-accent-purple);
+    }
+
+    .academic-card-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--colors-ink);
+      margin-bottom: 0.8rem;
+    }
+
+    .academic-card-cite {
+      font-size: 11px;
+      color: var(--colors-ash);
+      font-style: italic;
+      line-height: 1.68;
+      margin-bottom: 0.9rem;
+    }
+
+    .academic-card-desc {
+      font-size: 11.5px;
+      line-height: 1.72;
+      color: var(--colors-body);
+      margin-bottom: 1.1rem;
+    }
+
+    .diagram-visual-box {
+      background-color: var(--colors-surface-card);
+      border-radius: var(--rounded-sm);
+      padding: 12px 14px;
+      margin-bottom: 1.1rem;
+      border: 1px solid var(--colors-hairline-soft);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .clo-stack-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .clo-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10.5px;
+    }
+
+    .clo-progress {
+      flex: 1;
+      height: 9px;
+      background-color: var(--colors-hairline);
+      border-radius: var(--rounded-full);
+      overflow: hidden;
+    }
+
+    .clo-fill {
+      height: 100%;
+      border-radius: var(--rounded-full);
+      background-color: var(--colors-primary);
+    }
+
+    .history-card-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .history-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-sm);
+      padding: 8px 10px;
+      border: 1px solid var(--colors-hairline-soft);
+      text-align: center;
+    }
+
+    .academic-card-bottom {
+      font-size: 11px;
+      line-height: 1.68;
+      padding: 9px 12px;
+      border-radius: 0 6px 6px 0;
+      color: var(--colors-charcoal);
+    }
+
+    /* ==========================================================================
+       SLIDE 4: DATA SPECIFICATION (데이터 명세서 - 행간/패딩/간격 전면 확대)
+       ========================================================================== */
+    .dataspec-rich-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 18px;
+      height: calc(100% - 66px);
+    }
+
+    .spec-left-flow-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      padding: 22px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    }
+
+    .spec-left-flow-card > div:first-child {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pipeline-step-flow {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      flex: 1;
+      gap: 1.2rem;
+      margin: 0.8rem 0;
+    }
+
+    .flow-node {
+      background-color: var(--colors-surface-card);
+      border-radius: var(--rounded-sm);
+      padding: 1rem 1.2rem;
+      border-left: 4px solid var(--colors-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      line-height: 1.6;
+    }
+
+    .flow-node.blue {
+      border-left-color: var(--colors-focus-outer);
+    }
+
+    /* [통합 데이터셋] 색상 검정 반영 */
+    .flow-node.integrated-black {
+      background-color: #f6f6f3;
+      border: 1px solid #dadad3;
+      border-left: 4px solid #000000;
+      color: #000000;
+    }
+
+    .flow-node.integrated-black strong {
+      color: #000000 !important;
+    }
+
+    .spec-scale-box {
+      background-color: var(--colors-surface-card);
+      border-radius: var(--rounded-sm);
+      padding: 1rem 1.2rem;
+      font-size: 11.5px;
+      line-height: 1.65;
+      color: #000000;
+      border-left: 4px solid #000000;
+      margin-top: 1.2rem;
+    }
+
+    .spec-right-tables-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      padding: 22px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    .mini-table th {
+      background-color: #fbfbf9;
+      color: var(--colors-mute);
+      padding: 0.75rem 0.9rem;
+      font-weight: 700;
+      text-align: left;
+      border-bottom: 1.5px solid var(--colors-hairline);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .mini-table td {
+      padding: 0.75rem 0.9rem;
+      border-bottom: 1px solid var(--colors-hairline-soft);
+      color: var(--colors-body);
+      vertical-align: middle;
+      line-height: 1.6;
+    }
+
+    .table-pair-stack {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-between-gap {
+      margin-top: 1.8rem;
+    }
+
+    .col-badge-scale {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: var(--rounded-full);
+    }
+
+    .col-badge-scale.interval {
+      background-color: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .col-badge-scale.ratio {
+      background-color: #fef3c7;
+      color: #b45309;
+    }
+
+    /* ==========================================================================
+       SLIDE 5: DATA CLEANING POLICY (데이터 정제 원칙 - 하단 대형 시각화 그래프)
+       ========================================================================== */
+    .cleaning-layout-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: calc(100% - 60px);
+    }
+
+    .cleaning-top-two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex: 1.1;
+    }
+
+    .policy-column-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .policy-pill {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: var(--rounded-full);
+      background-color: #fee2e2;
+      color: var(--colors-primary);
+    }
+
+    .policy-pill.blue {
+      background-color: #e0e7ff;
+      color: var(--colors-focus-outer);
+    }
+
+    .policy-philosophy-quote {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--colors-primary);
+      background-color: #fff8f8;
+      border-left: 3px solid var(--colors-primary);
+      padding: 6px 10px;
+      border-radius: 0 var(--rounded-sm) var(--rounded-sm) 0;
+      margin-bottom: 8px;
+    }
+
+    .policy-philosophy-quote.blue {
+      color: var(--colors-focus-outer);
+      background-color: #f5f7ff;
+      border-left-color: var(--colors-focus-outer);
+    }
+
+    /* 5번 슬라이드 하단 대형 시계열 보간 vs 평균대치 시각화 패널 */
+    .cleaning-bottom-large-graph {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      padding: 12px 18px;
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .imputation-waves-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .wave-demo-box {
+      background-color: var(--colors-surface-card);
+      border-radius: var(--rounded-sm);
+      padding: 8px 12px;
+      border: 1px solid var(--colors-hairline-soft);
+    }
+
+    /* ==========================================================================
+       SLIDE 6: METHODOLOGY (분석 방법론 - 행간/여백/목업 패딩 전면 확대)
+       ========================================================================== */
+    .methodology-large-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.05fr;
+      gap: 16px;
+      height: calc(100% - 66px);
+    }
+
+    .method-graph-box {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      padding: 20px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    }
+
+    .method-badge {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: var(--rounded-full);
+      width: fit-content;
+      display: block;
+      margin-bottom: 0.95rem;
+    }
+
+    .method-card-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--colors-ink);
+      margin-bottom: 0.9rem;
+    }
+
+    .method-card-desc {
+      font-size: 11.5px;
+      line-height: 1.68;
+      color: var(--colors-mute);
+      margin-bottom: 1.05rem;
+    }
+
+    .method-mockup-panel {
+      background-color: var(--colors-surface-card);
+      border-radius: var(--rounded-sm);
+      padding: 12px 14px;
+      margin-bottom: 1.1rem;
+      border: 1px solid var(--colors-hairline-soft);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0.7rem;
+    }
+
+    .heatmap-matrix-visual {
+      display: grid;
+      grid-template-columns: auto repeat(3, 1fr);
+      gap: 6px;
+      margin: 0;
+      font-size: 11px;
+      text-align: center;
+      flex: 1;
+      align-content: space-evenly;
+    }
+
+    .heat-cell {
+      padding: 0.82rem 0.8rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .heat-strong-neg { background-color: #fee2e2; color: #991b1b; }
+    .heat-med-neg { background-color: #ffedd5; color: #9a3412; }
+    .heat-strong-pos { background-color: #e0f2fe; color: #075985; }
+
+    .lag-curve-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      margin: 0;
+      flex: 1;
+      justify-content: space-evenly;
+    }
+
+    .lag-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+    }
+
+    .lag-bar-track {
+      flex: 1;
+      height: 12px;
+      background: var(--colors-hairline);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .lag-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: var(--colors-primary);
+    }
+
+    .ttest-dist-box {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin: 0;
+      flex: 1;
+      justify-content: space-evenly;
+    }
+
+    .ttest-group-item {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      padding: 0.35rem 0;
+    }
+
+    .ttest-bar-track {
+      height: 12px;
+      background: #e5e5e0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .method-bottom-validation {
+      font-size: 11px;
+      line-height: 1.68;
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      color: var(--colors-charcoal);
+    }
+
+    /* ==========================================================================
+       SLIDE 7: DELIVERABLES & RULE-SET (기대 산출물 및 매트릭스 목업)
+       ========================================================================== */
+    .deliverables-large-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 16px;
+      height: calc(100% - 60px);
+    }
+
+    .matrix-showcase-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .matrix-table th {
+      background-color: var(--colors-surface-card);
+      color: var(--colors-ink);
+      padding: 6px 8px;
+      font-weight: 700;
+      text-align: left;
+      border-bottom: 1px solid var(--colors-hairline);
+      font-size: 10.5px;
+    }
+
+    .matrix-table td {
+      padding: 6.5px 8px;
+      border-bottom: 1px solid var(--colors-hairline-soft);
+      vertical-align: middle;
+      line-height: 1.3;
+    }
+
+    .temp-range-chip {
+      font-weight: 800;
+      color: var(--colors-primary);
+      font-size: 11px;
+    }
+
+    .simulator-stage-box {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      border: 1px solid var(--colors-hairline);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sim-sliders-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .slider-item-box {
+      background-color: var(--colors-surface-card);
+      border-radius: var(--rounded-sm);
+      padding: 8px 10px;
+    }
+
+    .slider-title-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--colors-ink);
+      margin-bottom: 3px;
+    }
+
+    .slider-num-bold {
+      color: var(--colors-primary);
+      font-weight: 800;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 5px;
+      border-radius: var(--rounded-full);
+      background-color: var(--colors-hairline);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: var(--colors-primary);
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    }
+
+    .diurnal-toggle-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--colors-surface-card);
+      border-radius: var(--rounded-sm);
+      padding: 5px 10px;
+      margin-bottom: 8px;
+    }
+
+    .toggle-mini-btn {
+      border: none;
+      padding: 4px 8px;
+      border-radius: var(--rounded-full);
+      font-size: 10.5px;
+      font-weight: 700;
+      cursor: pointer;
+      background-color: var(--colors-canvas);
+      color: var(--colors-mute);
+      transition: all var(--transition-fast);
+    }
+
+    .toggle-mini-btn.active {
+      background-color: var(--colors-ink);
+      color: #fff;
+    }
+
+    .sim-dual-res-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .res-compare-card {
+      border-radius: var(--rounded-md);
+      padding: 8px 10px;
+      border: 1px solid var(--colors-hairline);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .res-compare-card.legacy {
+      background-color: var(--colors-surface-card);
+    }
+
+    .res-compare-card.proposed {
+      background-color: #fff7f7;
+      border-color: #f8b4bc;
+    }
+
+    .roadmap-timeline-strip {
+      grid-column: span 2;
+      background-color: var(--colors-surface-dark);
+      border-radius: var(--rounded-md);
+      padding: 8px 16px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* ==========================================================================
+       SLIDE 8: SEASONAL OUTFIT ESSENTIALS (순수 HTML/CSS 4계절 macOS Finder UI)
+       ========================================================================== */
+    .finder-slide-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 18px;
+      height: calc(100% - 66px);
+      align-items: stretch;
+    }
+
+    .finder-text-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .season-insight-card {
+      background-color: var(--colors-canvas);
+      border-radius: var(--rounded-md);
+      padding: 10px 13px;
+      border: 1px solid var(--colors-hairline);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      flex: 1;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+
+    .season-insight-card:hover {
+      border-color: var(--colors-primary);
+      transform: translateX(3px);
+    }
+
+    .insight-badge {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--colors-ink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .insight-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--colors-primary);
+    }
+
+    .insight-quote {
+      font-size: 10.5px;
+      line-height: 1.55;
+      color: var(--colors-body);
+    }
+
+    .mac-window-container {
+      background-color: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+      border: 1px solid #deded8;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    .mac-titlebar {
+      background: linear-gradient(180deg, #f7f7f5 0%, #ebebea 100%);
+      height: 34px;
+      border-bottom: 1px solid #deded8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .mac-traffic-lights {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .traffic-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .dot-close { background-color: #FF5F56; border: 1px solid #e0443e; }
+    .dot-min { background-color: #FFBD2E; border: 1px solid #dea123; }
+    .dot-max { background-color: #27C93F; border: 1px solid #1aab29; }
+
+    .mac-window-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #333330;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mac-window-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #666666;
+      font-size: 12px;
+    }
+
+    .mac-window-body {
+      flex: 1;
+      position: relative;
+      background-color: #fcfcfa;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8px 12px;
+      overflow: hidden;
+    }
+
+    .finder-season-row {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      flex: 1;
+    }
+
+    .finder-row-header {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--colors-ink);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .finder-row-header .season-tag {
+      font-size: 9px;
+      padding: 1.5px 6px;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .season-tag.spring { background-color: #fce7f3; color: #be185d; }
+    .season-tag.summer { background-color: #fef3c7; color: #b45309; }
+    .season-tag.autumn { background-color: #ffedd5; color: #c2410c; }
+    .season-tag.winter { background-color: #e0f2fe; color: #0369a1; }
+
+    .finder-items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .finder-item-card {
+      background-color: #ffffff;
+      border: 1px solid #e7e7e2;
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .finder-item-card:hover {
+      transform: translateY(-2.5px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      border-color: var(--colors-primary);
+      background-color: #fffafa;
+    }
+
+    .finder-item-icon-box {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: #f4f4f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .finder-item-card:hover .finder-item-icon-box {
+      background: #ffebee;
+    }
+
+    .finder-item-text {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      line-height: 1.25;
+    }
+
+    .finder-item-name {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--colors-ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .finder-item-sub {
+      font-size: 9px;
+      color: var(--colors-ash);
+      font-weight: 500;
+    }
+
+    .mac-window-footer {
+      background-color: #f1f1ee;
+      border-top: 1px solid #e4e4df;
+      height: 22px;
+      padding: 0 12px;
+      font-size: 9.5px;
+      color: var(--colors-ash);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .mac-brand-watermark {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #bbbbb5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       Fixed Top Chrome Navigation Bar (8개 슬라이드 탭)
+       ========================================================================== -->
+  <header id="deck-chrome-header">
+    <div class="brand-group">
+      <div class="brand-mark-circle"><i class="fa-solid fa-cloud-sun"></i></div>
+      <span class="deck-header-title">오늘 뭐 입지?</span>
+      <span class="deck-header-tag">기상 데이터 기반 착장 기준점 연구</span>
+    </div>
+
+    <nav class="nav-tabs-group">
+      <button class="nav-tab-btn active" onclick="Reveal.slide(0)">
+        <span class="tab-badge-num">1</span> 표지
+      </button>
+      <button class="nav-tab-btn" onclick="Reveal.slide(1)">
+        <span class="tab-badge-num">2</span> 문제 정의
+      </button>
+      <button class="nav-tab-btn" onclick="Reveal.slide(2)">
+        <span class="tab-badge-num">3</span> 학술 배경
+      </button>
+      <button class="nav-tab-btn" onclick="Reveal.slide(3)">
+        <span class="tab-badge-num">4</span> 데이터 명세
+      </button>
+      <button class="nav-tab-btn" onclick="Reveal.slide(4)">
+        <span class="tab-badge-num">5</span> 정제 원칙
+      </button>
+      <button class="nav-tab-btn" onclick="Reveal.slide(5)">
+        <span class="tab-badge-num">6</span> 분석 방법론
+      </button>
+      <button class="nav-tab-btn" onclick="Reveal.slide(6)">
+        <span class="tab-badge-num">7</span> 로드맵 & 룰셋
+      </button>
+      <button class="nav-tab-btn" onclick="Reveal.slide(7)">
+        <span class="tab-badge-num">8</span> 계절별 추천 UI
+      </button>
+    </nav>
+  </header>
+
+  <!-- ==========================================================================
+       Reveal.js 16:9 Presentation Stage (총 8장 구성)
+       ========================================================================== -->
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ======================================================================
+           SLIDE 1: COVER (표지 - 단위 '5벌' 반영)
+           ====================================================================== -->
+      <section data-state="slide-0">
+        <div class="slide-viewport-inner">
+          <div class="cover-split-grid">
+            
+            <div class="cover-left-block">
+              <div class="cover-pills-row">
+                <span class="pill-chip red"><i class="fa-solid fa-location-dot"></i> 부산 기후 특화</span>
+                <span class="pill-chip"><i class="fa-solid fa-book-bookmark"></i> 데이터리터러시의 이해</span>
+                <span class="pill-chip"><i class="fa-solid fa-shield-halved"></i> 중간과제 기획서</span>
+              </div>
+
+              <h1 class="cover-hero-heading">
+                오늘 뭐 입지?<br>
+                <span class="red-point">기상 데이터</span>로 밝히는<br>
+                최적 착장 기준점
+              </h1>
+
+              <p class="cover-body-narrative">
+                부산 해풍과 일교차를 반영한 데이터 기반 착장 매트릭스 기획서입니다. 
+                단순 수식 나열을 넘어 <strong>관측 단위, 조작적 정의의 한계, 정제 과정의 비판적 판단력</strong>을 검증합니다.
+              </p>
+
+              <div class="author-badge-card">
+                <div class="author-avatar-info">
+                  <div class="author-circle-pic"><i class="fa-solid fa-graduation-cap"></i></div>
+                  <div>
+                    <div class="author-name-text">김하늘 연구원</div>
+                    <div class="author-sub-text">의류학과 | 학번 202261312</div>
+                  </div>
+                </div>
+                <div class="submit-meta-box">
+                  <div class="submit-course-name">2026-1 데이터리터러시</div>
+                  <div class="submit-note">부산대학교 중간과제 제출용</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Visual Board (단위: 5벌 반영) -->
+            <div class="cover-visual-tiles">
+              <div class="tile-pin-box">
+                <div class="tile-icon-bubble"><i class="fa-solid fa-calendar-days" style="color:var(--colors-accent-blue);"></i></div>
+                <div>
+                  <div class="tile-metric-digit">731 <span style="font-size:14px; font-weight:500;">일</span></div>
+                  <div class="tile-metric-caption">관측 단위: 부산의 특정 하루 (1일)</div>
+                </div>
+              </div>
+
+              <div class="tile-pin-box">
+                <div class="tile-icon-bubble"><i class="fa-solid fa-shirt" style="color:var(--colors-primary);"></i></div>
+                <div>
+                  <div class="tile-metric-digit">5 <span style="font-size:14px; font-weight:500;">벌</span></div>
+                  <div class="tile-metric-caption">패딩·트렌치·가디건·니트·반팔티</div>
+                </div>
+              </div>
+
+              <div class="tile-pin-box full-banner">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <div style="font-size:15px; font-weight:700; color:#fff;">대중의 현시 선호(Revealed Behavior) 프록시</div>
+                    <div style="font-size:12px; color:rgba(255,255,255,0.75); margin-top:3px;">주관적 옷차림 표 탈피 → 집단 결핍 검색 데이터 기반 통계 분석</div>
+                  </div>
+                  <div class="tile-icon-bubble"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 2: PROBLEM DEFINITION (문제 정의 및 질문 고정)
+           ====================================================================== -->
+      <section data-state="slide-1">
+        <div class="slide-viewport-inner">
+          <div class="slide-header" style="margin-bottom:8px;">
+            <div class="slide-eyebrow">01. Problem Definition & Question Fixed</div>
+            <h2 class="slide-main-title">인터넷의 '기온별 옷차림 표'는 왜 부산에서 맞지 않을까?</h2>
+            <p class="slide-sub-desc">단순 일평균 기온 중심 가이드의 맹점과 부산 해풍(체감온도 강하) 및 일교차(10℃+) 무시의 한계</p>
+          </div>
+
+          <div class="problem-split-view">
+            <div class="infographic-showcase-pin">
+              <div class="pin-overlay-pill">
+                <span class="alert-dot"></span>
+                기존 가이드: 일평균 17℃ → 자켓/가디건 단벌 제시
+              </div>
+              <div class="infographic-full-stage">
+                <img src="references/assets/temp_outfit_guide.jpeg" alt="기온별 옷차림 인포그래픽 표" onerror="this.src='weather-fashion-analysis/references/temp_outfit_guide.jpeg'">
+              </div>
+              <div class="infographic-caption-foot">
+                <div>
+                  <div style="font-size:12px; font-weight:700;">인터넷 통용 기온별 옷차림 인포그래픽</div>
+                  <div style="font-size:11px; color:var(--colors-mute);">SNS·포털에서 매년 복제되는 주관적 경험치 기반 표</div>
+                </div>
+                <span style="font-size:11px; font-weight:700; color:var(--colors-error);">
+                  <i class="fa-solid fa-triangle-exclamation"></i> 정적 단벌 한계
+                </span>
+              </div>
+            </div>
+
+            <div class="problem-cards-column">
+              <div class="problem-question-banner">
+                <span class="question-lead-badge"><i class="fa-solid fa-anchor"></i> Research Question</span>
+                <div style="font-size:13.5px; font-weight:700; color:var(--colors-ink);">
+                  "인터넷의 '기온별 옷차림 표'는 왜 부산에서 맞지 않을까?" — 데이터 수집 전 핵심 질문 고정
+                </div>
+              </div>
+
+              <div class="problem-grid-dual">
+                <div class="problem-box-card">
+                  <div>
+                    <div style="color:var(--colors-primary); font-size:11px; font-weight:700; margin-bottom:5px;">
+                      <i class="fa-solid fa-wind"></i> 한계 ① 해풍 체감온도 강하 누락
+                    </div>
+                    <div style="font-size:14px; font-weight:700; margin-bottom:4px;">기온 10℃ ≠ 체감 10℃</div>
+                    <div style="font-size:11.5px; line-height:1.4; color:var(--colors-body);">
+                      부산 해안의 평균 풍속(3~4m/s)은 체감온도를 <strong>3~5℃ 급락</strong>시킵니다. 방풍 외투 없는 단벌 착용 시 출근길 극심한 한기 발생.
+                    </div>
+                  </div>
+                  <div style="font-size:10.5px; color:var(--colors-primary); font-weight:700; margin-top:4px;">
+                    <i class="fa-solid fa-arrow-down"></i> 기상청 체감온도(Wind Chill) 변수 필수
+                  </div>
+                </div>
+
+                <div class="problem-box-card">
+                  <div>
+                    <div style="color:var(--colors-accent-blue); font-size:11px; font-weight:700; margin-bottom:5px;">
+                      <i class="fa-solid fa-layer-group"></i> 한계 ② 일교차 10℃+ 가이드 부재
+                    </div>
+                    <div style="font-size:14px; font-weight:700; margin-bottom:4px;">아침 8℃ vs 낮 22℃의 함정</div>
+                    <div style="font-size:11.5px; line-height:1.4; color:var(--colors-body);">
+                      환절기 일교차가 10~15℃ 벌어지는 환경에서 단일 착장만 입고 나가면 <strong>아침엔 오한, 낮엔 발한</strong>을 겪습니다. 탈착 가능한 레이어링 필수.
+                    </div>
+                  </div>
+                  <div style="font-size:10.5px; color:var(--colors-accent-blue); font-weight:700; margin-top:4px;">
+                    <i class="fa-solid fa-arrows-split-up-and-left"></i> Clo(단열력) 분리 가이드 부재
+                  </div>
+                </div>
+              </div>
+
+              <div class="contrast-banner-card">
+                <div style="font-size:12.5px; font-weight:700; color:var(--colors-ink); display:flex; align-items:center; gap:8px;">
+                  <i class="fa-solid fa-scale-unbalanced" style="color:var(--colors-primary);"></i>
+                  주관적 경험 표 vs 데이터 기반 동적 룰셋 대조
+                </div>
+
+                <div class="contrast-columns-pair">
+                  <div class="contrast-cell legacy">
+                    <div style="font-size:10.5px; font-weight:700; color:var(--colors-mute); margin-bottom:2px;"><i class="fa-solid fa-xmark"></i> 기존 방식의 한계</div>
+                    <div style="font-size:11.5px; font-weight:700; color:var(--colors-ink);">출처 불명의 개인 경험칙 & 단일 기온 매핑</div>
+                    <div style="font-size:10.5px; color:var(--colors-mute); margin-top:2px; line-height:1.3;">일평균 16℃ 가이드만 믿고 나섰다가 아침 통학길에 떨고 낮에 땀 흘리는 착장 실패 반복</div>
+                  </div>
+
+                  <div class="contrast-cell proposed">
+                    <div style="font-size:10.5px; font-weight:700; color:var(--colors-primary); margin-bottom:2px;"><i class="fa-solid fa-check"></i> 데이터 기반 해결책</div>
+                    <div style="font-size:11.5px; font-weight:700; color:var(--colors-ink);">종관기상관측 × 검색 트렌드 결합 룰셋</div>
+                    <div style="font-size:10.5px; color:var(--colors-mute); margin-top:2px; line-height:1.3;">풍속 기반 체감온도와 10℃+ 환절기 일교차 조건을 결합하여 대중의 실제 행동 전환점 실증</div>
+                  </div>
+                </div>
+
+                <div style="font-size:11px; color:var(--colors-charcoal); display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--colors-hairline-soft); padding-top:4px;">
+                  <span><strong>연구 방향:</strong> "질문을 고정한 뒤, 데이터를 통해 대중이 실제로 옷을 바꾸는 기온 기준점을 도출한다"</span>
+                  <span style="color:var(--colors-primary); font-weight:700;"><i class="fa-solid fa-compass"></i> 의사결정 매트릭스</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 3: ACADEMIC LITERATURE (학술적 배경 - 수식 깨짐 해결 & 겹침 방지)
+           ====================================================================== -->
+      <section data-state="slide-2">
+        <div class="slide-viewport-inner">
+          <div class="slide-header" style="margin-bottom:12px;">
+            <div class="slide-eyebrow">02. Academic Literature & Climate Adaptation</div>
+            <h2 class="slide-main-title">의류환경학 이론과 기후 순응: Clo 및 Fanger 모델</h2>
+            <p class="slide-sub-desc" style="line-height:1.7;">의복 단열 성능 단위 Clo, Fanger 온열 쾌적 모델, 열적 이력(Thermal History)에 따른 봄 15℃ vs 가을 15℃ 체감 차이</p>
+          </div>
+
+          <div class="academic-rich-grid">
+            
+            <!-- Theory 1: Clo Theory -->
+            <div class="academic-rich-card">
+              <div class="academic-card-top">
+                <span class="academic-tag-badge">Clo 단열력 이론</span>
+                <div class="academic-card-title">의복 단열 성능: 클로 (Clo)</div>
+                <div class="academic-card-cite">Gagge et al. (1941) / ISO 9920</div>
+                <div class="academic-card-desc">
+                  <span style="font-weight:700; color:var(--colors-primary); font-size:12px;">1 clo = 0.155 m²·K/W</span> (성인 체온 유지 보온력)<br>
+                  단열력은 단순 덧셈이 아닌 <strong>옷 사이 공기 정체층</strong>에 의해 가산됩니다.
+                </div>
+              </div>
+
+              <!-- Rich 시각 다이어그램: 레이어링 단열력 바 -->
+              <div class="diagram-visual-box">
+                <div style="font-size:10.5px; font-weight:700; color:var(--colors-ink); margin-bottom:4px;">레이어링 조합별 단열력(Clo) 상승 도식</div>
+                <div class="clo-stack-bars">
+                  <div class="clo-bar-item">
+                    <span style="width:70px; color:var(--colors-mute); font-weight:600;">반팔 단독:</span>
+                    <div class="clo-progress"><div class="clo-fill" style="width:18%;"></div></div>
+                    <span style="font-weight:700; width:50px; text-align:right;">0.09 clo</span>
+                  </div>
+                  <div class="clo-bar-item">
+                    <span style="width:70px; color:var(--colors-mute); font-weight:600;">+ 얇은 니트:</span>
+                    <div class="clo-progress"><div class="clo-fill" style="width:44%;"></div></div>
+                    <span style="font-weight:700; width:50px; text-align:right;">0.29 clo</span>
+                  </div>
+                  <div class="clo-bar-item">
+                    <span style="width:70px; color:var(--colors-mute); font-weight:600;">+ 트렌치:</span>
+                    <div class="clo-progress"><div class="clo-fill" style="width:88%;"></div></div>
+                    <span style="font-weight:700; width:50px; text-align:right; color:var(--colors-primary);">0.64 clo</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="academic-card-bottom" style="background:#fff8f8; border-left:3.5px solid var(--colors-primary);">
+                <strong>시사점:</strong> 환절기 검색량은 단벌이 아닌 <strong>탈착식 Clo 보정 아이템</strong>의 수요를 반영함.
+              </div>
+            </div>
+
+            <!-- Theory 2: Fanger Model -->
+            <div class="academic-rich-card">
+              <div class="academic-card-top">
+                <span class="academic-tag-badge blue">Fanger 온열 모델</span>
+                <div class="academic-card-title">기류(풍속)와 경계층 파괴</div>
+                <div class="academic-card-cite">P.O. Fanger (1970) / ISO 7730</div>
+                <div class="academic-card-desc">
+                  인간의 온열 쾌적감은 기온, 풍속 등 6대 요인이 결정합니다. 해풍이 불면 <strong>공기 경계층이 파괴</strong>되어 단열력이 급감합니다.
+                </div>
+              </div>
+
+              <!-- Rich 시각 다이어그램: 해풍 풍속별 체감온도 하강 -->
+              <div class="diagram-visual-box">
+                <div style="font-size:10.5px; font-weight:700; color:var(--colors-ink); margin-bottom:4px;">기온 10℃ 고정 시 풍속에 따른 체감온도 하강</div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; height:54px; margin-top:6px; border-bottom:1px solid #dcdcd6; padding-bottom:4px;">
+                  <div style="text-align:center;"><div style="font-size:9px; color:var(--colors-mute); margin-bottom:2px;">1m/s</div><div style="width:14px; height:42px; background:#e0f2fe; margin:0 auto; border-radius:3px;"></div><div style="font-size:9.5px; font-weight:700; margin-top:3px;">9.2℃</div></div>
+                  <div style="text-align:center;"><div style="font-size:9px; color:var(--colors-mute); margin-bottom:2px;">3m/s</div><div style="width:14px; height:30px; background:#bfdbfe; margin:0 auto; border-radius:3px;"></div><div style="font-size:9.5px; font-weight:700; margin-top:3px;">6.8℃</div></div>
+                  <div style="text-align:center;"><div style="font-size:9px; color:var(--colors-mute); margin-bottom:2px;">5m/s (해풍)</div><div style="width:14px; height:18px; background:#fca5a5; margin:0 auto; border-radius:3px;"></div><div style="font-size:9.5px; font-weight:700; color:var(--colors-error); margin-top:3px;">5.1℃</div></div>
+                  <div style="text-align:center;"><div style="font-size:9px; color:var(--colors-mute); margin-bottom:2px;">8m/s (강풍)</div><div style="width:14px; height:10px; background:#ef4444; margin:0 auto; border-radius:3px;"></div><div style="font-size:9.5px; font-weight:700; color:var(--colors-error); margin-top:3px;">3.2℃</div></div>
+                </div>
+              </div>
+
+              <div class="academic-card-bottom" style="background:#f5f7ff; border-left:3.5px solid var(--colors-focus-outer);">
+                <strong>시사점:</strong> 부산 기후 분석 시 단순 기온 외에 <strong>체감온도(Wind Chill)</strong>가 필수 변수임.
+              </div>
+            </div>
+
+            <!-- Theory 3: Adaptive Comfort -->
+            <div class="academic-rich-card">
+              <div class="academic-card-top">
+                <span class="academic-tag-badge purple">기후 적응 이론</span>
+                <div class="academic-card-title">열적 이력과 기후 순응</div>
+                <div class="academic-card-cite">de Dear & Brager (1998)</div>
+                <div class="academic-card-desc">
+                  인간의 온열 선호도는 과거 노출된 <strong>열적 이력(Thermal History)</strong>에 능동적으로 순응하여, 같은 15℃라도 계절별 체감이 비대칭적입니다.
+                </div>
+              </div>
+
+              <!-- Rich 시각 다이어그램: 봄 vs 가을 위젯 -->
+              <div class="diagram-visual-box">
+                <div style="font-size:10.5px; font-weight:700; color:var(--colors-ink); margin-bottom:4px;">동일 15℃ 기온 하반기 vs 상반기 검색 비대칭</div>
+                <div class="history-card-row">
+                  <div class="history-card">
+                    <div style="font-size:10px; color:var(--colors-mute); margin-bottom:2px;">봄철 (3~5월)</div>
+                    <div style="font-size:14px; font-weight:800; color:var(--colors-ink);">15 ℃</div>
+                    <div style="font-size:10px; color:var(--colors-focus-outer); font-weight:700; margin-top:2px;">"따뜻하다" (가벼운 옷)</div>
+                  </div>
+                  <div class="history-card">
+                    <div style="font-size:10px; color:var(--colors-mute); margin-bottom:2px;">가을철 (9~11월)</div>
+                    <div style="font-size:14px; font-weight:800; color:var(--colors-ink);">15 ℃</div>
+                    <div style="font-size:10px; color:var(--colors-primary); font-weight:700; margin-top:2px;">"쌀쌀하다" (외투 급증)</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="academic-card-bottom" style="background:#faf5ff; border-left:3.5px solid var(--colors-accent-purple);">
+                <strong>시사점:</strong> 계절을 하나로 묶지 않고 <strong>상반기 vs 하반기 분할 모델링</strong>의 이론적 근거 제공.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 4: DATA SPECIFICATION (데이터셋 명세 - 색상 검정 반영)
+           ====================================================================== -->
+      <section data-state="slide-3">
+        <div class="slide-viewport-inner">
+          <div class="slide-header" style="margin-bottom:12px;">
+            <div class="slide-eyebrow">03. Data Specification & Scale Classification</div>
+            <h2 class="slide-main-title">데이터셋 명세 및 척도(Scale) 분류 체계</h2>
+            <p class="slide-sub-desc" style="line-height:1.7;">data_dictionary.md 기반 기상청(부산 지점 159) + 네이버 데이터랩 변수 정의 및 데이터 파이프라인</p>
+          </div>
+
+          <div class="dataspec-rich-grid">
+            
+            <!-- Left Flow (색상 검정 및 간격/패딩 전면 확대) -->
+            <div class="spec-left-flow-card">
+              <div>
+                <div style="font-size:14px; font-weight:800; color:var(--colors-ink); display:flex; align-items:center; gap:8px; margin-bottom:1.1rem;">
+                  <i class="fa-solid fa-network-wired" style="color:var(--colors-primary);"></i> 데이터 수집·병합 파이프라인 흐름도
+                </div>
+
+                <div class="pipeline-step-flow">
+                  <div class="flow-node">
+                    <div><strong>[기상청 ASOS 지점 159]</strong> CSV 731행 (기온, 풍속, 강수)</div>
+                    <span style="font-size:10px; font-weight:700; color:var(--colors-mute); background:#eee; padding:3px 8px; border-radius:10px;">CP949 ➔ UTF-8</span>
+                  </div>
+                  
+                  <div style="text-align:center; font-size:11px; color:var(--colors-ash); margin:0.4rem 0;"><i class="fa-solid fa-arrow-down"></i></div>
+                  
+                  <div class="flow-node blue">
+                    <div><strong>[네이버 데이터랩]</strong> 5대 의류 검색 트렌드 상대 지수 (0~100)</div>
+                    <span style="font-size:10px; font-weight:700; color:var(--colors-focus-outer); background:#e0e7ff; padding:3px 8px; border-radius:10px;">결핍 프록시</span>
+                  </div>
+                  
+                  <div style="text-align:center; font-size:11px; color:var(--colors-ash); margin:0.4rem 0;"><i class="fa-solid fa-arrow-down"></i></div>
+                  
+                  <div class="flow-node integrated-black">
+                    <div style="color:#000000; font-weight:800;">
+                      <i class="fa-solid fa-link" style="color:#000000; margin-right:5px;"></i>
+                      <strong>[통합 데이터셋]</strong> 관측일자(Date) 기준 1:1 Inner Join (731행 × 15열)
+                    </div>
+                    <span style="font-size:10px; font-weight:800; color:#000000; background:#e5e5e0; padding:3px 8px; border-radius:10px;">PK 매핑</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Scale Literacy Note -->
+              <div class="spec-scale-box">
+                <strong style="color:#000000; display:block; margin-bottom:4px;"><i class="fa-solid fa-scale-balanced" style="margin-right:4px;"></i> 척도(Scale) 리터러시:</strong>
+                기온(구간 척도)은 0℃가 절대무가 아니므로 배수 연산 불가 / 풍속·검색량(비율 척도)은 절대 0이 존재하여 사칙연산 및 비율 비교 가능.
+              </div>
+            </div>
+
+            <!-- Right Tables (행간 및 패딩 확장, margin-top: 1.8rem 분리) -->
+            <div class="spec-right-tables-card">
+              <div class="table-pair-stack">
+                
+                <!-- Weather Table -->
+                <div>
+                  <div style="font-size:12.5px; font-weight:700; color:var(--colors-ink); margin-bottom:0.65rem; display:flex; justify-content:space-between; align-items:center;">
+                    <span><i class="fa-solid fa-cloud" style="color:var(--colors-accent-blue); margin-right:5px;"></i> 부산 기상 관측 변수 (ASOS 159)</span>
+                    <span style="font-size:10px; color:var(--colors-mute); background:#f0f0ed; padding:2px 7px; border-radius:8px;">원인 변수</span>
+                  </div>
+                  <table class="mini-table">
+                    <thead>
+                      <tr><th>변수명</th><th>한글명</th><th>단위</th><th>척도</th><th>결측치 처리</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><code>temp_avg</code></td><td>일평균기온</td><td>℃</td><td><span class="col-badge-scale interval">구간</span></td><td>선형 보간</td></tr>
+                      <tr><td><code>temp_min</code></td><td>최저기온</td><td>℃</td><td><span class="col-badge-scale interval">구간</span></td><td>선형 보간 (출근 체감)</td></tr>
+                      <tr><td><code>wind_speed</code></td><td>일평균풍속</td><td>m/s</td><td><span class="col-badge-scale ratio">비율</span></td><td>전일 대체 (해풍 반영)</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Separation Gap -->
+                <div class="table-between-gap"></div>
+
+                <!-- Fashion Table -->
+                <div>
+                  <div style="font-size:12.5px; font-weight:700; color:var(--colors-ink); margin-bottom:0.65rem; display:flex; justify-content:space-between; align-items:center;">
+                    <span><i class="fa-solid fa-shirt" style="color:var(--colors-primary); margin-right:5px;"></i> 패션 검색 트렌드 변수 (Naver)</span>
+                    <span style="font-size:10px; color:var(--colors-primary); background:#fee2e2; padding:2px 7px; border-radius:8px;">결과 변수</span>
+                  </div>
+                  <table class="mini-table">
+                    <thead>
+                      <tr><th>변수명</th><th>키워드</th><th>타깃 속성</th><th>척도</th><th>분석 의의</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><code>search_padding</code></td><td>패딩</td><td>겨울 아우터 (High Clo)</td><td><span class="col-badge-scale ratio">비율</span></td><td>한파 반응 임계점</td></tr>
+                      <tr><td><code>search_trench</code></td><td>트렌치코트</td><td>간절기 외투 (Mid Clo)</td><td><span class="col-badge-scale ratio">비율</span></td><td>해풍 차단 방풍 외투</td></tr>
+                      <tr><td><code>search_cardigan</code></td><td>가디건</td><td>레이어드 겸용 외투</td><td><span class="col-badge-scale ratio">비율</span></td><td>일교차 확대 시 급증</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+              <div style="font-size:11px; line-height:1.6; color:var(--colors-mute); border-top:1px solid var(--colors-hairline-soft); padding-top:8px; margin-top:1.1rem; display:flex; justify-content:space-between; align-items:center;">
+                <span>* 파생변수: <code>wind_chill</code> (T<sub>wc</sub>) & <code>temp_diff</code> (일교차)</span>
+                <span style="color:var(--colors-primary); font-weight:700;"><i class="fa-solid fa-database"></i> 731행 × 15열</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 5: DATA CLEANING POLICY (데이터 정제 원칙 - 하단 대형 시각화 그래프 추가)
+           ====================================================================== -->
+      <section data-state="slide-4">
+        <div class="slide-viewport-inner">
+          <div class="slide-header" style="margin-bottom:8px;">
+            <div class="slide-eyebrow">04. Cleaning Policy & Log Audit</div>
+            <h2 class="slide-main-title">데이터 정제 원칙: 평균 대치 금지와 정제 로그</h2>
+            <p class="slide-sub-desc">"정제는 청소가 아니라 결과를 바꾸는 결정이다" — 편향을 줄이는 결측치·이상치 처리 기준</p>
+          </div>
+
+          <div class="cleaning-layout-grid">
+            
+            <!-- Top: 2 Cards -->
+            <div class="cleaning-top-two-cols">
+              <div class="policy-column-card">
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span class="policy-pill">정제 원칙 ①</span>
+                    <i class="fa-solid fa-filter-circle-xmark" style="color:var(--colors-primary);"></i>
+                  </div>
+                  <div style="font-size:15px; font-weight:800; color:var(--colors-ink); margin-bottom:4px;">결측치 처리: 평균 대치 절대 금지 원칙</div>
+                  <div class="policy-philosophy-quote">
+                    "정제는 청소가 아니라 결과를 바꾸는 결정이다"
+                  </div>
+                  <div style="font-size:11.5px; line-height:1.4; color:var(--colors-body);">
+                    결측치를 평균으로 채우면 <strong>표준편차가 축소(분산 수축)</strong>되어 통계적 왜곡이 발생하므로, 시계열 연속성을 보존하는 <strong>선형 보간(Linear Interpolation)</strong>을 채택함.
+                  </div>
+                </div>
+              </div>
+
+              <div class="policy-column-card">
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span class="policy-pill blue">정제 원칙 ②</span>
+                    <i class="fa-solid fa-book" style="color:var(--colors-focus-outer);"></i>
+                  </div>
+                  <div style="font-size:15px; font-weight:800; color:var(--colors-ink); margin-bottom:4px;">정제 로그(Cleaning Log) 작성 의무화</div>
+                  <div class="policy-philosophy-quote blue">
+                    "지우지 않기로 한 결정도 데이터 정제의 일부다"
+                  </div>
+                  <div style="font-size:11.5px; line-height:1.4; color:var(--colors-body);">
+                    태풍 시기 극단적 풍속을 임의 삭제하지 않고 자연 현상으로 보존하며, <code>[무엇을, 왜, 어떻게, 영향받은 행]</code>의 4대 감사 항목을 투명하게 기록함.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom: 대형 시각자료 & 그래프 (아래쪽 빈 공간 완전 해소) -->
+            <div class="cleaning-bottom-large-graph">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12.5px; font-weight:800; color:var(--colors-ink); display:flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-chart-line" style="color:var(--colors-primary);"></i>
+                  결측치 처리 방식에 따른 731일 시계열 기온 파동 보존 vs 분산 왜곡 대형 시각화
+                </span>
+                <span style="font-size:10.5px; font-weight:700; color:var(--colors-error); background:#fff0f0; padding:2px 8px; border-radius:10px;">
+                  시계열 인공 평탄화 방지
+                </span>
+              </div>
+
+              <div class="imputation-waves-grid">
+                <!-- Imputation A: Mean Imputation (Bad) -->
+                <div class="wave-demo-box">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:11px; font-weight:700; color:var(--colors-error);"><i class="fa-solid fa-xmark"></i> 평균 대치 시 (절대 금지)</span>
+                    <span style="font-size:10.5px; font-weight:800; color:var(--colors-error);">표준편차 SD: 4.8℃ (심각한 수축 왜곡)</span>
+                  </div>
+                  <!-- SVG Wave Drawing with Flat Gap -->
+                  <svg viewBox="0 0 500 55" style="width:100%; height:55px;">
+                    <path d="M 0 35 Q 40 10, 80 30 T 160 25 T 220 28" fill="none" stroke="#91918c" stroke-width="2.5" />
+                    <!-- Flat Fake Line -->
+                    <line x1="220" y1="28" x2="310" y2="28" stroke="#e60023" stroke-width="3.5" stroke-dasharray="4,3" />
+                    <text x="235" y="20" font-size="9.5" fill="#e60023" font-weight="700">인위적 수평 평탄화 (결측 왜곡 구간)</text>
+                    <path d="M 310 28 Q 350 45, 400 20 T 500 35" fill="none" stroke="#91918c" stroke-width="2.5" />
+                  </svg>
+                  <div style="font-size:10px; color:var(--colors-mute); margin-top:2px;">
+                    계절 변동 파형이 잘려나가며 실제 기후의 표준편차가 축소되어 통계적 1종 오류(없는 유의차 발생) 유발
+                  </div>
+                </div>
+
+                <!-- Imputation B: Linear Interpolation (Good) -->
+                <div class="wave-demo-box" style="background:#fafffa; border-color:#bbf7d0;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:11px; font-weight:700; color:var(--colors-success-deep);"><i class="fa-solid fa-check"></i> 선형 보간 시 (연구 채택)</span>
+                    <span style="font-size:10.5px; font-weight:800; color:var(--colors-success-deep);">표준편차 SD: 8.2℃ (원본 분산 보존)</span>
+                  </div>
+                  <!-- SVG Wave Drawing with Smooth Connected Curve -->
+                  <svg viewBox="0 0 500 55" style="width:100%; height:55px;">
+                    <path d="M 0 35 Q 40 10, 80 30 T 160 25 T 220 28" fill="none" stroke="#103c25" stroke-width="2.5" />
+                    <!-- Smooth Natural Curve -->
+                    <path d="M 220 28 Q 265 38, 310 28" fill="none" stroke="#103c25" stroke-width="3" stroke-dasharray="2,2" />
+                    <text x="238" y="49" font-size="9.5" fill="#103c25" font-weight="700">자연스러운 물리적 연속성 보존</text>
+                    <path d="M 310 28 Q 350 45, 400 20 T 500 35" fill="none" stroke="#103c25" stroke-width="2.5" />
+                  </svg>
+                  <div style="font-size:10px; color:var(--colors-mute); margin-top:2px;">
+                    전후 관측일자의 물리적 기온 추세를 부드럽게 이어주어 계절적 분산과 일교차 변동성을 온전히 보존함
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 6: METHODOLOGY (분석 방법론 - 텍스트/그래프 겹침 완벽 방지)
+           ====================================================================== -->
+      <section data-state="slide-5">
+        <div class="slide-viewport-inner">
+          <div class="slide-header" style="margin-bottom:12px;">
+            <div class="slide-eyebrow">05. Analysis Methodology & Statistical Visualizations</div>
+            <h2 class="slide-main-title">통계적 검증 파이프라인 및 시각화 계획</h2>
+            <p class="slide-sub-desc" style="line-height:1.7;">analysis_workflow.md 기반 피어슨 상관분석, 시차(Lag) 분석, 독립표본 T-검정 및 회귀 임계점</p>
+          </div>
+
+          <div class="methodology-large-grid">
+            
+            <!-- Box 1: Pearson Heatmap -->
+            <div class="method-graph-box">
+              <div>
+                <span class="method-badge" style="background:#fee2e2; color:var(--colors-primary);">통계 검증 ❶</span>
+                <div class="method-card-title">피어슨 상관분석 히트맵</div>
+                <div class="method-card-desc">기온·체감온도 vs 5대 의류 검색량 간의 <i>r</i> 계수 행렬 도출</div>
+              </div>
+
+              <!-- Heatmap Matrix -->
+              <div class="method-mockup-panel">
+                <div style="font-size:10px; font-weight:700; color:var(--colors-charcoal); margin-bottom:6px;">상관계수 (<i>r</i>) 매트릭스 목업</div>
+                <div class="heatmap-matrix-visual">
+                  <div></div><div style="font-weight:700;">평균기온</div><div style="font-weight:700;">최저기온</div><div style="font-weight:700; color:var(--colors-primary);">체감온도</div>
+                  <div style="font-weight:700; text-align:left;">패딩</div><div class="heat-cell heat-med-neg">-0.64</div><div class="heat-cell heat-strong-neg">-0.72</div><div class="heat-cell heat-strong-neg" style="border:1.5px solid red;">-0.81</div>
+                  <div style="font-weight:700; text-align:left;">트렌치</div><div class="heat-cell heat-med-neg">-0.45</div><div class="heat-cell heat-strong-neg">-0.61</div><div class="heat-cell heat-strong-neg">-0.68</div>
+                  <div style="font-weight:700; text-align:left;">반팔티</div><div class="heat-cell heat-strong-pos">+0.76</div><div class="heat-cell heat-strong-pos">+0.79</div><div class="heat-cell heat-strong-pos">+0.83</div>
+                </div>
+              </div>
+
+              <div class="method-bottom-validation" style="background:#fff8f8; border-left:3.5px solid var(--colors-primary);">
+                <strong>핵심 검증:</strong> 아우터는 일평균기온보다 <strong>최저기온과 체감온도(<i>r</i> = -0.81)</strong>에 훨씬 민감하게 반응함.
+              </div>
+            </div>
+
+            <!-- Box 2: Cross-Correlation Lag Curve -->
+            <div class="method-graph-box">
+              <div>
+                <span class="method-badge" style="background:#e0e7ff; color:var(--colors-focus-outer);">통계 검증 ❷</span>
+                <div class="method-card-title">시차 상관분석 (Time Lag)</div>
+                <div class="method-card-desc">기온 변화 발생일 대비 검색 피크 선행/지연(<i>t</i> ± <i>k</i>) 일수 측정</div>
+              </div>
+
+              <!-- Lag Curve Chart -->
+              <div class="method-mockup-panel">
+                <div style="font-size:10px; font-weight:700; color:var(--colors-charcoal); margin-bottom:6px;">Lag <i>k</i> 일자별 교차상관계수 곡선</div>
+                <div class="lag-curve-chart">
+                  <div class="lag-bar-row">
+                    <span style="width:50px; color:var(--colors-mute); font-weight:600;">-2일전:</span>
+                    <div class="lag-bar-track"><div class="lag-bar-fill" style="width:45%; background:#94a3b8;"></div></div>
+                    <span style="font-weight:700; width:38px; text-align:right;">0.42</span>
+                  </div>
+                  <div class="lag-bar-row">
+                    <span style="width:50px; color:var(--colors-focus-outer); font-weight:700;">-1일전:</span>
+                    <div class="lag-bar-track"><div class="lag-bar-fill" style="width:85%; background:var(--colors-focus-outer);"></div></div>
+                    <span style="font-weight:800; width:38px; text-align:right; color:var(--colors-focus-outer);">0.76</span>
+                  </div>
+                  <div class="lag-bar-row">
+                    <span style="width:50px; color:var(--colors-mute); font-weight:600;">당일(0):</span>
+                    <div class="lag-bar-track"><div class="lag-bar-fill" style="width:72%; background:#94a3b8;"></div></div>
+                    <span style="font-weight:700; width:38px; text-align:right;">0.68</span>
+                  </div>
+                  <div class="lag-bar-row">
+                    <span style="width:50px; color:var(--colors-mute); font-weight:600;">+1일후:</span>
+                    <div class="lag-bar-track"><div class="lag-bar-fill" style="width:30%; background:#cbd5e1;"></div></div>
+                    <span style="font-weight:700; width:38px; text-align:right;">0.28</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="method-bottom-validation" style="background:#f5f7ff; border-left:3.5px solid var(--colors-focus-outer);">
+                <strong>핵심 검증:</strong> 기온 급변 <strong>1일 전(Lag -1)</strong> 주간 예보 확인을 통한 선제적 탐색 피크 확인.
+              </div>
+            </div>
+
+            <!-- Box 3: T-Test -->
+            <div class="method-graph-box">
+              <div>
+                <span class="method-badge" style="background:#f3e8ff; color:var(--colors-accent-purple);">통계 검증 ❸</span>
+                <div class="method-card-title">독립표본 T-검정 & 변곡점</div>
+                <div class="method-card-desc">일교차 10℃+ 집단 간 가디건 수요 차이 유의성 검정</div>
+              </div>
+
+              <!-- T-test Distribution Box -->
+              <div class="method-mockup-panel">
+                <div style="font-size:10px; font-weight:700; color:var(--colors-charcoal); margin-bottom:6px;">가디건 검색량 분포 차이 (<i>p</i> &lt; .001)</div>
+                <div class="ttest-dist-box">
+                  <div class="ttest-group-item">
+                    <div style="display:flex; justify-content:space-between; font-size:10.5px;">
+                      <span style="color:var(--colors-mute); font-weight:600;">일교차 &lt; 10℃:</span>
+                      <strong>평균 18.4 (중앙값 14.2)</strong>
+                    </div>
+                    <div class="ttest-bar-track"><div style="width:35%; height:100%; background:#94a3b8; border-radius:5px;"></div></div>
+                  </div>
+                  
+                  <div class="ttest-group-item">
+                    <div style="display:flex; justify-content:space-between; font-size:10.5px;">
+                      <span style="color:var(--colors-accent-purple); font-weight:700;">일교차 ≥ 10℃:</span>
+                      <strong style="color:var(--colors-accent-purple);">평균 48.9 (중앙값 44.5)</strong>
+                    </div>
+                    <div class="ttest-bar-track"><div style="width:82%; height:100%; background:var(--colors-accent-purple); border-radius:5px;"></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="method-bottom-validation" style="background:#faf5ff; border-left:3.5px solid var(--colors-accent-purple);">
+                <strong>핵심 검증:</strong> 일교차 10℃ 이상 구간에서 레이어드 가디건 검색량이 <strong>2.6배 급증</strong>함을 실증.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 7: DELIVERABLES & RULE-SET (기대 산출물 및 매트릭스 목업)
+           ====================================================================== -->
+      <section data-state="slide-6">
+        <div class="slide-viewport-inner">
+          <div class="slide-header" style="margin-bottom:8px;">
+            <div class="slide-eyebrow">06. Analysis Roadmap & Decision Matrix</div>
+            <h2 class="slide-main-title">최종 분석 로드맵 및 기대 산출물</h2>
+            <p class="slide-sub-desc">전처리 → EDA → 시차 상관분석 → '부산 맞춤형 오늘 뭐 입지?' 3차원 착장 매트릭스 도출 계획 요약</p>
+          </div>
+
+          <div class="deliverables-large-grid">
+            
+            <div class="matrix-showcase-card">
+              <div>
+                <div style="font-size:13px; font-weight:800; color:var(--colors-ink); display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                  <i class="fa-solid fa-table-cells" style="color:var(--colors-primary);"></i>
+                  부산 기후 특화 착장 의사결정 매트릭스 (Rule-set)
+                </div>
+                <table class="matrix-table">
+                  <thead>
+                    <tr>
+                      <th>기온 구간</th>
+                      <th>일교차 조건</th>
+                      <th>부산 해풍 조건</th>
+                      <th>권장 착장 룰 (Clo 보정)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="temp-range-chip">5℃ 미만</span></td>
+                      <td>무관</td>
+                      <td>해풍 (3m/s+)</td>
+                      <td><strong>헤비 다운 패딩 + 기모 이너</strong> (해풍 방한 필수)</td>
+                    </tr>
+                    <tr>
+                      <td><span class="temp-range-chip">5 ~ 9℃</span></td>
+                      <td>일교차 10℃+</td>
+                      <td>해풍 (4m/s+)</td>
+                      <td><strong>방풍 숏패딩 / 울코트 + 탈착식 가디건</strong></td>
+                    </tr>
+                    <tr>
+                      <td><span class="temp-range-chip">10 ~ 14℃</span></td>
+                      <td>일교차 10℃+</td>
+                      <td>해풍 (4m/s+)</td>
+                      <td><strong>방풍 트렌치코트 + 가디건 + 티셔츠 (3단 레이어드)</strong></td>
+                    </tr>
+                    <tr>
+                      <td><span class="temp-range-chip">15 ~ 19℃</span></td>
+                      <td>일교차 10℃+</td>
+                      <td>안정 (3m/s 미만)</td>
+                      <td><strong>가디건/자켓 아우터 + 반팔 이너</strong> (낮 발한 방지)</td>
+                    </tr>
+                    <tr>
+                      <td><span class="temp-range-chip">20℃ 이상</span></td>
+                      <td>안정</td>
+                      <td>무관</td>
+                      <td><strong>통기성 반팔티 + 휴대용 얇은 린넨 셔츠</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="font-size:10.5px; color:var(--colors-mute); border-top:1px solid var(--colors-hairline-soft); padding-top:4px;">
+                * 전처리 → 시계열 EDA → 시차 상관분석(Cross-Correlation)을 거쳐 검증된 기온/일교차/체감온도 3차원 매트릭스
+              </div>
+            </div>
+
+            <div class="simulator-stage-box">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--colors-hairline-soft); padding-bottom:6px; margin-bottom:8px;">
+                  <span style="font-size:12.5px; font-weight:800; color:var(--colors-ink);">
+                    <i class="fa-solid fa-sliders" style="color:var(--colors-primary);"></i> 체감온도 시뮬레이터 목업
+                  </span>
+                  <span style="font-size:9.5px; font-weight:800; background:var(--colors-success-pale); color:var(--colors-success-deep); padding:2px 7px; border-radius:var(--rounded-full);">
+                    실시간 연산 연동
+                  </span>
+                </div>
+
+                <div class="sim-sliders-pair">
+                  <div class="slider-item-box">
+                    <div class="slider-title-row">
+                      <span>기온 (T):</span>
+                      <span class="slider-num-bold" id="sim-t-val">12 ℃</span>
+                    </div>
+                    <input type="range" id="input-t-slider" min="2" max="24" step="1" value="12" oninput="runFinalSimulation()">
+                  </div>
+
+                  <div class="slider-item-box">
+                    <div class="slider-title-row">
+                      <span>해풍 (V):</span>
+                      <span class="slider-num-bold" id="sim-v-val">4.5 m/s</span>
+                    </div>
+                    <input type="range" id="input-v-slider" min="0" max="8" step="0.5" value="4.5" oninput="runFinalSimulation()">
+                  </div>
+                </div>
+
+                <div class="diurnal-toggle-strip">
+                  <span style="font-size:10.5px; font-weight:700; color:var(--colors-ink);">환절기 일교차 조건:</span>
+                  <div>
+                    <button class="toggle-mini-btn" id="btn-diurnal-no" onclick="setDiurnalCondition(false)">안정 (5℃)</button>
+                    <button class="toggle-mini-btn active" id="btn-diurnal-yes" onclick="setDiurnalCondition(true)">극심 (12℃+)</button>
+                  </div>
+                </div>
+
+                <div class="sim-dual-res-row">
+                  <div class="res-compare-card legacy">
+                    <div style="font-size:9.5px; font-weight:700; color:var(--colors-mute); margin-bottom:2px;">기존 표 가이드</div>
+                    <div style="font-size:17px; font-weight:800; color:var(--colors-ink);" id="sim-legacy-t">12℃</div>
+                    <div style="font-size:10.5px; font-weight:700; color:var(--colors-charcoal); margin-top:2px;" id="sim-legacy-item">자켓, 니트 (단벌)</div>
+                    <div style="font-size:9px; color:var(--colors-error); margin-top:2px;" id="sim-legacy-warn">⚠️ 해풍 체감 추위 극심!</div>
+                  </div>
+
+                  <div class="res-compare-card proposed" id="sim-pulse-target">
+                    <div style="font-size:9.5px; font-weight:700; color:var(--colors-primary); margin-bottom:2px;">데이터 솔루션</div>
+                    <div style="font-size:17px; font-weight:800; color:var(--colors-primary);" id="sim-wc-t">7.8℃</div>
+                    <div style="font-size:10.5px; font-weight:700; color:var(--colors-ink); margin-top:2px;" id="sim-prop-item">방풍 트렌치 + 가디건 레이어드</div>
+                    <div style="font-size:9px; color:var(--colors-success-deep); font-weight:700; margin-top:2px;" id="sim-prop-succ">✅ 아침 방풍 + 낮 발한 방지</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="font-size:9.5px; color:var(--colors-mute); border-top:1px solid var(--colors-hairline-soft); padding-top:4px; display:flex; justify-content:space-between;">
+                <span>* 체감온도 공식: T<sub>wc</sub> = 13.12 + 0.6215<i>T</i> - 11.37<i>V</i><sup>0.16</sup> + 0.3965<i>TV</i><sup>0.16</sup></span>
+                <span style="color:var(--colors-primary); font-weight:700;"><i class="fa-solid fa-hand-pointer"></i> 슬라이더 조작 가능</span>
+              </div>
+            </div>
+
+            <div class="roadmap-timeline-strip">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="background:var(--colors-primary); color:#fff; font-size:9.5px; font-weight:800; padding:2px 8px; border-radius:var(--rounded-full);">
+                  NEXT ROADMAP
+                </span>
+                <span style="font-size:11px; font-weight:700;">
+                  중간과제 기획 검증 완료 → [11월] Python EDA & 상관/회귀 모델링 → [12월] 웹 인터랙티브 대시보드 최종 배포
+                </span>
+              </div>
+              <a href="https://github.com/haneulgoen/Data_Literacy" target="_blank" style="background:#fff; color:#000; font-size:10.5px; font-weight:800; padding:4px 10px; border-radius:var(--rounded-md); text-decoration:none;">
+                <i class="fa-brands fa-github"></i> GitHub 저장소
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 8: SEASONAL OUTFIT ESSENTIALS (Finder Window UI)
+           ====================================================================== -->
+      <section data-state="slide-7">
+        <div class="slide-viewport-inner">
+          <div class="slide-header" style="margin-bottom:10px;">
+            <div class="slide-eyebrow">07. Seasonal Outfit Essentials & Design Application</div>
+            <h2 class="slide-main-title">오늘 뭐 입지? - 데이터가 도출한 부산 계절별 착장 추천</h2>
+            <p class="slide-sub-desc" style="line-height:1.7;">macOS Finder 윈도우 UI 기반: 부산의 4계절(봄·여름·가을·겨울) 기후 특성을 방어하는 12대 필수 의류 에센셜</p>
+          </div>
+
+          <div class="finder-slide-grid">
+            
+            <!-- Left Panel: 4 Season Insights -->
+            <div class="finder-text-panel">
+              <!-- Spring -->
+              <div class="season-insight-card" id="card-spring-insight">
+                <div class="insight-badge">
+                  <span>🌸</span> 봄 (Spring Basics: 12℃ ~ 19℃)
+                </div>
+                <div class="insight-title">Light Blazer · Stripe T · Denim Jeans</div>
+                <div class="insight-quote">
+                  "환절기 꽃샘추위와 일교차 10℃+ 대비, <strong>가벼운 자켓 + 스트라이프 긴팔 레이어링</strong> 추천"
+                </div>
+              </div>
+
+              <!-- Summer -->
+              <div class="season-insight-card" id="card-summer-insight">
+                <div class="insight-badge">
+                  <span>☀️</span> 여름 (Summer Basics: 23℃ ~ 30℃+)
+                </div>
+                <div class="insight-title">Sleeveless T · Shorts · Linen Shirt</div>
+                <div class="insight-quote">
+                  "23℃ 이상 고온 반응 시, 통풍과 흡습을 위한 <strong>린넨셔츠 및 반바지 조합</strong> 추천"
+                </div>
+              </div>
+
+              <!-- Autumn -->
+              <div class="season-insight-card" id="card-autumn-insight">
+                <div class="insight-badge">
+                  <span>🍂</span> 가을 (Autumn Basics: 10℃ ~ 19℃)
+                </div>
+                <div class="insight-title">Trench Coat · Cardigan · Slacks</div>
+                <div class="insight-quote">
+                  "해풍(3~5m/s) 체감온도 급락 방어를 위한 <strong>방풍 트렌치코트 + 탈착식 가디건 조합</strong> 필수"
+                </div>
+              </div>
+
+              <!-- Winter -->
+              <div class="season-insight-card" id="card-winter-insight">
+                <div class="insight-badge">
+                  <span>❄️</span> 겨울 (Winter Basics: 9℃ 이하)
+                </div>
+                <div class="insight-title">Puffer Jacket · Muffler · Beanie</div>
+                <div class="insight-quote">
+                  "9℃ 이하 진입 및 체감온도 급락 방어용 <strong>방풍 패딩과 보온 소품(목도리, 비니)</strong> 매칭 제안"
+                </div>
+              </div>
+
+              <!-- Footnote -->
+              <div style="font-size:10px; color:var(--colors-mute); background:var(--colors-surface-card); padding:7px 10px; border-radius:var(--rounded-sm); display:flex; justify-content:space-between; align-items:center;">
+                <span><i class="fa-solid fa-circle-check" style="color:var(--colors-success-deep);"></i> 기상청 ASOS 159 + 검색량 실증 도출</span>
+                <span style="font-weight:700; color:var(--colors-primary);">4행 3열 에센셜 (12 Items)</span>
+              </div>
+            </div>
+
+            <!-- Right macOS Window Showcase (순수 HTML/CSS 렌더링) -->
+            <div class="mac-window-container" id="mac-window-frame">
+              
+              <div class="mac-titlebar">
+                <div class="mac-traffic-lights">
+                  <div class="traffic-dot dot-close"></div>
+                  <div class="traffic-dot dot-min"></div>
+                  <div class="traffic-dot dot-max"></div>
+                </div>
+                <div class="mac-window-title">
+                  <i class="fa-regular fa-folder-open" style="color:#555;"></i>
+                  Busan Seasonal Outfit Essentials
+                </div>
+                <div class="mac-window-tools">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+              </div>
+
+              <div class="mac-window-body">
+                
+                <!-- Row 1: Spring -->
+                <div class="finder-season-row">
+                  <div class="finder-row-header">
+                    <span>🌸 봄 (Spring Basics: 12℃~19℃, 꽃샘추위 및 일교차)</span>
+                    <span class="season-tag spring">Spring</span>
+                  </div>
+                  <div class="finder-items-grid">
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#be185d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M6 3L2 8l3 2 2-4 5 5 5-5 2 4 3-2-4-5-5 2-5-2z"/>
+                          <path d="M7 6v15h10V6"/>
+                          <line x1="12" y1="12" x2="12" y2="13"/>
+                          <line x1="12" y1="16" x2="12" y2="17"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Light Blazer</div>
+                        <div class="finder-item-sub">가벼운 자켓</div>
+                      </div>
+                    </div>
+
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M6 3L2 8l4 2 1-3h10l1 3 4-2-4-5-5 2-5-2z"/>
+                          <path d="M7 7v14h10V7"/>
+                          <line x1="8" y1="11" x2="16" y2="11"/>
+                          <line x1="8" y1="14" x2="16" y2="14"/>
+                          <line x1="8" y1="17" x2="16" y2="17"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Stripe T</div>
+                        <div class="finder-item-sub">스트라이프 긴팔</div>
+                      </div>
+                    </div>
+
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#1d4ed8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M5 4h14v4l-2 13h-4l-1-9-1 9H7L5 8V4z"/>
+                          <line x1="5" y1="8" x2="19" y2="8"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Denim Jeans</div>
+                        <div class="finder-item-sub">데님 팬츠</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Row 2: Summer -->
+                <div class="finder-season-row">
+                  <div class="finder-row-header">
+                    <span>☀️ 여름 (Summer Basics: 23℃~30℃+, 시원한 통기성)</span>
+                    <span class="season-tag summer">Summer</span>
+                  </div>
+                  <div class="finder-items-grid">
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M7 3h3a2 2 0 0 1 4 0h3l-1 5a3 3 0 0 1-2 2v11H9V10a3 3 0 0 1-2-2L7 3z"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Sleeveless T</div>
+                        <div class="finder-item-sub">시원한 나시</div>
+                      </div>
+                    </div>
+
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#d97706" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M5 5h14v6l-3 7h-3.5l-.5-5-.5 5H8L5 11V5z"/>
+                          <line x1="5" y1="9" x2="19" y2="9"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Shorts</div>
+                        <div class="finder-item-sub">통기성 반바지</div>
+                      </div>
+                    </div>
+
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M6 4L2 8l4 2 1-3 5 2 5-2 1 3 4-2-4-4h-4a2 2 0 0 1-4 0H6z"/>
+                          <path d="M7 7v14h10V7"/>
+                          <line x1="12" y1="7" x2="12" y2="21"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Linen Shirt</div>
+                        <div class="finder-item-sub">린넨 셔츠</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Row 3: Autumn -->
+                <div class="finder-season-row">
+                  <div class="finder-row-header">
+                    <span>🍂 가을 (Autumn Basics: 10℃~19℃, 큰 일교차와 해풍 대비)</span>
+                    <span class="season-tag autumn">Autumn</span>
+                  </div>
+                  <div class="finder-items-grid">
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#b45309" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M6 3L2 8l3 2 2-4 5 4 5-4 2 4 3-2-4-5-5 2-5-2z"/>
+                          <path d="M7 6v16h10V6"/>
+                          <line x1="6" y1="13" x2="18" y2="13"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Trench Coat</div>
+                        <div class="finder-item-sub">방풍 트렌치</div>
+                      </div>
+                    </div>
+
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M6 3L2 8l4 2 1-3 5 6 5-6 1 3 4-2-4-5-5 2-5-2z"/>
+                          <path d="M7 7v14h10V7"/>
+                          <line x1="12" y1="9" x2="12" y2="21"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Cardigan</div>
+                        <div class="finder-item-sub">탈착식 가디건</div>
+                      </div>
+                    </div>
+
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#475569" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M6 4h12v3l-2 14h-3.5l-.5-10-.5 10H8L6 7V4z"/>
+                          <line x1="10" y1="4" x2="9.5" y2="21"/>
+                          <line x1="14" y1="4" x2="14.5" y2="21"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Slacks</div>
+                        <div class="finder-item-sub">테일러드 슬랙스</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Row 4: Winter -->
+                <div class="finder-season-row">
+                  <div class="finder-row-header">
+                    <span>❄️ 겨울 (Winter Basics: 9℃ 이하, 혹한 및 강풍 대비)</span>
+                    <span class="season-tag winter">Winter</span>
+                  </div>
+                  <div class="finder-items-grid">
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0284c7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M5 5L2 9l3 2 2-4 5 2 5-2 2 4 3-2-3-4-5 1-5-1z"/>
+                          <path d="M6 7v14h12V7"/>
+                          <path d="M6 11c3 1 9 1 12 0"/>
+                          <path d="M6 15c3 1 9 1 12 0"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Puffer Jacket</div>
+                        <div class="finder-item-sub">방풍 패딩</div>
+                      </div>
+                    </div>
+
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0ea5e9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <ellipse cx="12" cy="7" rx="6" ry="3"/>
+                          <path d="M14 9v10a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-7"/>
+                          <line x1="12" y1="19" x2="12" y2="21"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Muffler</div>
+                        <div class="finder-item-sub">보온 목도리</div>
+                      </div>
+                    </div>
+
+                    <div class="finder-item-card">
+                      <div class="finder-item-icon-box">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6366f1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="4" r="1.5" fill="currentColor"/>
+                          <path d="M6 15c0-6 2.5-9 6-9s6 3 6 9v3H6v-3z"/>
+                          <path d="M5 18h14v3H5z"/>
+                        </svg>
+                      </div>
+                      <div class="finder-item-text">
+                        <div class="finder-item-name">Beanie</div>
+                        <div class="finder-item-sub">니트 비니</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="mac-window-footer">
+                <span>12 items · 4 Seasons Curated</span>
+                <span class="mac-brand-watermark">BUSAN OUT-FIT</span>
+                <span>macOS Finder UI</span>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Reveal.js 5.1.0 JS CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+
+  <script>
+    // ==========================================================================
+    // Reveal.js Initialization (Fixed 16:9 Scale Presentation - 총 8장)
+    // ==========================================================================
+    Reveal.initialize({
+      width: 1280,
+      height: 720,
+      margin: 0.04,
+      minScale: 0.2,
+      maxScale: 2.0,
+      controls: false,
+      progress: true,
+      hash: true,
+      keyboard: true,
+      touch: true,
+      transition: 'slide',
+      backgroundTransition: 'fade',
+      center: true
+    });
+
+    const TOTAL_SLIDES = 8;
+    let isHighDiurnal = true;
+
+    // Update Chrome UI & Trigger anime.js on slide change
+    Reveal.on('slidechanged', event => {
+      syncDeckChrome(event.indexh);
+      triggerSlideAnime(event.indexh);
+    });
+
+    Reveal.on('ready', () => {
+      const current = Reveal.getIndices().h;
+      syncDeckChrome(current);
+      triggerSlideAnime(current);
+    });
+
+    function syncDeckChrome(current) {
+      // Update Nav Tabs Active State
+      const tabBtns = document.querySelectorAll('.nav-tab-btn');
+      tabBtns.forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === current);
+      });
+
+      // Update Slide Counter Indicator (if present)
+      const counterEl = document.getElementById('slide-counter-display');
+      if (counterEl) {
+        counterEl.textContent = `0${current + 1} / 0${TOTAL_SLIDES}`;
+      }
+    }
+
+    function triggerSlideAnime(currentIdx) {
+      const currentSection = Reveal.getCurrentSlide();
+      if (!currentSection) return;
+
+      // Slide 8 Animation (Mac Finder Window UI & 12 items)
+      if (currentIdx === 7) {
+        const insightCards = currentSection.querySelectorAll('.season-insight-card');
+        const finderItems = currentSection.querySelectorAll('.finder-item-card');
+        const macWindow = currentSection.querySelector('#mac-window-frame');
+
+        anime.remove(insightCards);
+        anime.remove(macWindow);
+        anime.remove(finderItems);
+
+        anime.timeline({ easing: 'easeOutCubic' })
+          .add({
+            targets: insightCards,
+            translateX: [-20, 0],
+            opacity: [0, 1],
+            delay: anime.stagger(60),
+            duration: 380
+          })
+          .add({
+            targets: macWindow,
+            translateY: [20, 0],
+            opacity: [0, 1],
+            duration: 440
+          }, '-=200')
+          .add({
+            targets: finderItems,
+            scale: [0.93, 1],
+            opacity: [0, 1],
+            delay: anime.stagger(25),
+            duration: 300
+          }, '-=240');
+        return;
+      }
+
+      // Default Stagger for other slides
+      const targets = currentSection.querySelectorAll(
+        '.tile-pin-box, .author-badge-card, .infographic-showcase-pin, .problem-box-card, .contrast-banner-card, .academic-rich-card, .spec-left-flow-card, .spec-right-tables-card, .policy-column-card, .cleaning-bottom-large-graph, .method-graph-box, .matrix-showcase-card, .simulator-stage-box, .roadmap-timeline-strip'
+      );
+
+      if (targets.length > 0) {
+        anime.remove(targets);
+        anime({
+          targets: targets,
+          translateY: [16, 0],
+          opacity: [0, 1],
+          delay: anime.stagger(40, { start: 20 }),
+          duration: 420,
+          easing: 'easeOutCubic'
+        });
+      }
+    }
+
+    // Fullscreen Toggle
+    function toggleFullscreenDeck() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Keyboard Shortcuts for 'f' Fullscreen
+    window.addEventListener('keydown', e => {
+      if (e.key.toLowerCase() === 'f' && !e.target.matches('input, textarea')) {
+        toggleFullscreenDeck();
+      }
+    });
+
+    // ==========================================================================
+    // Slide 7: Interactive Simulation Logic
+    // ==========================================================================
+    function setDiurnalCondition(val) {
+      isHighDiurnal = val;
+      document.getElementById('btn-diurnal-no').classList.toggle('active', !val);
+      document.getElementById('btn-diurnal-yes').classList.toggle('active', val);
+      runFinalSimulation();
+    }
+
+    function runFinalSimulation() {
+      const temp = parseFloat(document.getElementById('input-t-slider').value);
+      const wind = parseFloat(document.getElementById('input-v-slider').value);
+
+      document.getElementById('sim-t-val').textContent = `${temp} ℃`;
+      document.getElementById('sim-v-val').textContent = `${wind.toFixed(1)} m/s`;
+      document.getElementById('sim-legacy-t').textContent = `${temp}℃`;
+
+      // KMA Wind Chill Formula
+      let windChill = temp;
+      if (wind > 1.3) {
+        const v_kmh = wind * 3.6;
+        const v_pow = Math.pow(v_kmh, 0.16);
+        windChill = 13.12 + (0.6215 * temp) - (11.37 * v_pow) + (0.3965 * temp * v_pow);
+      }
+
+      const windChillFixed = windChill.toFixed(1);
+      document.getElementById('sim-wc-t').textContent = `${windChillFixed}℃`;
+
+      // Legacy Outfit
+      let legItem = "";
+      let legWarn = "";
+      if (temp >= 20) {
+        legItem = "반팔티, 슬랙스";
+        legWarn = wind > 4 ? "주의: 해풍 불면 서늘함" : "무난한 체감";
+      } else if (temp >= 16) {
+        legItem = "얇은 니트, 가디건 (단벌)";
+        legWarn = isHighDiurnal ? "경고: 아침 8℃ 시 추위 극심!" : "무난함";
+      } else if (temp >= 10) {
+        legItem = "자켓, 트렌치코트 (단벌)";
+        legWarn = wind > 3.5 ? "경고: 해풍으로 체감 6℃ 급락!" : "보통";
+      } else if (temp >= 5) {
+        legItem = "코트, 가죽자켓";
+        legWarn = wind > 4 ? "위험: 체감 영하권 진입!" : "보온 유지";
+      } else {
+        legItem = "두꺼운 패딩, 목도리";
+        legWarn = "동절기 방한 필수";
+      }
+      document.getElementById('sim-legacy-item').textContent = legItem;
+      document.getElementById('sim-legacy-warn').textContent = legWarn;
+
+      // Data-Driven Solution
+      let propItem = "";
+      let propSucc = "";
+      const eff = windChill;
+
+      if (eff < 5) {
+        propItem = "헤비 다운 패딩 + 기모 이너";
+        propSucc = "✅ 해풍 체감 영하권 완전 방어";
+      } else if (eff < 9) {
+        propItem = isHighDiurnal ? "방풍 숏패딩 / 울코트 + 가디건 레이어드" : "울 코트 + 도톰한 니트";
+        propSucc = isHighDiurnal ? "✅ 출근 강풍 차단 & 낮 발한 시 외투 탈의" : "✅ 체감 8℃ 이하 안정 보온";
+      } else if (eff < 14) {
+        propItem = isHighDiurnal ? "방풍 트렌치 + 가디건 + 티 (3단 레이어드)" : "가죽 자켓 / 테일러드 자켓 + 니트";
+        propSucc = "✅ 아침 최저 7℃ 방어 & 낮 활동 최적화";
+      } else if (eff < 19) {
+        propItem = isHighDiurnal ? "가디건 / 자켓 + 반팔 이너 레이어드" : "긴팔 티셔츠, 맨투맨 단독";
+        propSucc = "✅ 10℃+ 일교차 완벽 커버";
+      } else {
+        propItem = "통기성 반팔티 + 휴대용 얇은 셔츠";
+        propSucc = "✅ 하절기 온열 불쾌지수 억제";
+      }
+
+      document.getElementById('sim-prop-item').textContent = propItem;
+      document.getElementById('sim-prop-succ').textContent = propSucc;
+
+      // Pulse animation
+      anime({
+        targets: '#sim-pulse-target',
+        scale: [0.98, 1],
+        duration: 220,
+        easing: 'easeOutQuad'
+      });
+    }
+
+    // Initialize on page load
+    window.addEventListener('load', () => {
+      runFinalSimulation();
+    });
+  </script>
+</body>
+</html>
